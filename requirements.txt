@@ -6,7 +6,9 @@ lxml==6.1.0
 markdown-it-py==4.0.0
 mdurl==0.1.2
 packaging==26.2
+-e git+https://github.com/Veer564/PacketHawk.git@b372c0296f40ab71af1845a1131ae4803a050837#egg=packethawk
 pluggy==1.6.0
+pyfiglet==1.0.4
 Pygments==2.20.0
 pyshark==0.6
 pytest==9.0.3
