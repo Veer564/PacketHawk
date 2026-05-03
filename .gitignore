@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+*.db
+*.sqlite
+.env
+data/exports/
+data/sample_pcaps/*.pcap
+.DS_Store
+config.yaml
+*.pid
+daemon.log

@@ -1,0 +1,21 @@
+detection:
+  port_scan:
+    threshold: 15
+    window_seconds: 5
+    severity: "HIGH"
+  arp_spoof:
+    severity: "CRITICAL"
+  dns_anomaly:
+    entropy_threshold: 3.5
+    severity: "MEDIUM"
+  traffic_spike:
+    multiplier: 3.0
+    window_seconds: 10
+    severity: "HIGH"
+
+capture:
+  interface: "en0"
+  packet_count: 100
+
+database:
+  path: "data/packethawk.db"
