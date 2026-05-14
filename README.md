@@ -62,15 +62,18 @@ python main.py simulate
 
 **Attack simulation — all 4 detectors firing**
 
-![Simulate](docs/screenshot_simulate.png)
+![Simulate](docs/Simulate.png)
 
 **Database statistics**
 
-![Stats](docs/screenshot_stats.png)
+![Stats](docs/Stats.png)
 
 **Real PCAP analysis — live network traffic**
 
-![Analyse](docs/screenshot_analyse.png)
+![Analyse](docs/LiveAnalysis.png)
+
+**Sample testing of Wirshark Network Traffic Capture**
+![Sample](docs/RealtimeAnalysis.png)
 
 ---
 
