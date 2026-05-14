@@ -9,6 +9,7 @@ from packethawk.storage.db          import init_db, get_connection, store_packet
 from packethawk.detection.engine    import run_all_detectors, save_alerts
 from packethawk.capture.pcap_reader import read_pcap
 from simulate_packets               import generate_all
+from packethawk.capture.live import LiveCapture
 
 def get_config():
     with open("config.yaml", "r") as f:
@@ -161,6 +162,24 @@ def simulate(export_name):
 
     if export_name:
         export_report(alert_dicts, export_name)
+
+@cli.command()
+@click.option("--interface", default="en0",
+              help="Network interface to capture on (default: en0)")
+@click.option("--interval", default=10,
+              help="Seconds between analysis runs (default: 10)")
+def live(interface, interval):
+    """Start live packet capture and real-time anomaly detection."""
+    print_banner()
+    click.echo(f"[PacketHawk] Starting live capture on {interface}...")
+    click.echo(f"[PacketHawk] Analysis runs every {interval} seconds.")
+    click.echo(f"[PacketHawk] Press Ctrl+C to stop.\n")
+
+    capture = LiveCapture(
+        interface        = interface,
+        analyse_interval = interval,
+    )
+    capture.start()
 
 if __name__ == "__main__":
     cli()
