@@ -1,11 +1,23 @@
 import threading
 import time
+import platform
 from datetime         import datetime
 from collections      import defaultdict
 from scapy.all        import sniff, ARP, IP, TCP, UDP, DNS, DNSQR
 from packethawk.capture.models  import PacketSummary
 from packethawk.storage.db      import init_db, store_packets_bulk
 from packethawk.detection.engine import run_all_detectors, save_alerts
+
+def get_default_interface():
+    """Return default network interface based on operating system."""
+    system = platform.system()
+    if system == "Darwin":    # macOS
+        return "en0"
+    elif system == "Linux":
+        return "eth0"
+    elif system == "Windows":
+        return "Wi-Fi"
+    return "en0"
 
 # ── Packet conversion ─────────────────────────────────────────
 
