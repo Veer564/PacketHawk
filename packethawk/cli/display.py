@@ -63,19 +63,17 @@ def print_alerts(alerts):
         header_style="bold white",
     )
 
-    table.add_column("",            width=3)
     table.add_column("Severity",    style="bold",    width=10)
-    table.add_column("Rule",        style="cyan",    width=16)
-    table.add_column("Description", style="white",   width=45)
-    table.add_column("Source IP",   style="magenta", width=18)
-    table.add_column("Time",        style="dim",     width=18)
+    table.add_column("Rule",        style="cyan",    width=14)
+    table.add_column("Description", style="white",   width=50)
+    table.add_column("Source IP",   style="magenta", width=15)
+    table.add_column("Time",        style="dim",     width=12)
 
     for alert in alerts:
         severity = alert.get("severity", "LOW")
         colour   = SEVERITY_COLOURS.get(severity, "white")
         icon     = SEVERITY_ICONS.get(severity, "  ")
         table.add_row(
-            f"[{colour}]{icon}[/{colour}]",
             f"[{colour}]{severity}[/{colour}]",
             alert.get("rule_name",   "—"),
             alert.get("description", "—"),
