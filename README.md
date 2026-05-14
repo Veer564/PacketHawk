@@ -161,6 +161,7 @@ threads down cleanly without data loss.
 
 ## Project structure
 
+```
 PacketHawk/
 ├── packethawk/
 │   ├── capture/
@@ -184,3 +185,4 @@ PacketHawk/
 ├── simulate_packets.py      # attack traffic generator
 ├── config.example.yaml
 └── main.py                  # CLI entry point
+```
