@@ -72,7 +72,7 @@ python main.py simulate
 
 ![Analyse](docs/LiveAnalysis.png)
 
-**Sample testing of Wirshark Network Traffic Capture**
+**Sample testing of Wireshark Network Traffic Capture**
 ![Sample](docs/RealtimeAnalysis.png)
 
 ---
