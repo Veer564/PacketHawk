@@ -79,6 +79,9 @@ python main.py simulate
 
 ## Architecture
 
+## Architecture
+
+```
 Network Interface (live) / PCAP File (offline)
               ↓
        Packet Capture Engine
@@ -99,6 +102,7 @@ Network Interface (live) / PCAP File (offline)
        ├── display.py       Colour-coded alert tables + ASCII banner
        ├── commands.py      Click CLI entry points
        └── exporter.py      JSON + CSV export
+```
 
 ---
 
