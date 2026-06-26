@@ -128,8 +128,6 @@ hits 3x the baseline — catches DDoS and flood attempts.
 
 ## Live capture architecture
 
-## Live capture architecture
-
 Two threads run simultaneously. A shared packet buffer sits between them, protected by `threading.Lock()` to prevent race conditions.
 
 ```
