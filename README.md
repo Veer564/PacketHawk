@@ -80,22 +80,25 @@ python main.py simulate
 ## Architecture
 
 Network Interface (live) / PCAP File (offline)
-↓
-Packet Capture Engine
-├── live.py      (Scapy + threading, auto-detects interface)
-└── pcap_reader.py (pyshark generator — any file size)
-↓
-PacketSummary Dataclass (models.py)
-↓
-Detection Engine (engine.py)
-├── port_scan.py      Counter + sliding time window
-├── arp_spoof.py      MAC/IP conflict tracking
-├── dns_anomaly.py    Shannon entropy scoring
-└── traffic_spike.py  Rolling average comparison
-↓
-SQLite Database
-↓
-Rich CLI Output → JSON / CSV Export
+              ↓
+       Packet Capture Engine
+       ├── live.py          (Scapy + threading.Lock, auto-detects interface)
+       └── pcap_reader.py   (pyshark generator — flat memory, any file size)
+              ↓
+       PacketSummary Dataclass  (models.py)
+              ↓
+       Detection Engine  (engine.py)
+       ├── port_scan.py     Counter + sliding 5s time window
+       ├── arp_spoof.py     IP→MAC conflict tracking
+       ├── dns_anomaly.py   Shannon entropy scoring (threshold 3.5)
+       └── traffic_spike.py Rolling average, 3x burst detection
+              ↓
+       SQLite Database  (db.py)
+              ↓
+       Rich CLI Output
+       ├── display.py       Colour-coded alert tables + ASCII banner
+       ├── commands.py      Click CLI entry points
+       └── exporter.py      JSON + CSV export
 
 ---
 
@@ -121,15 +124,25 @@ hits 3x the baseline — catches DDoS and flood attempts.
 
 ## Live capture architecture
 
-Main thread                    Background thread
-─────────────────────          ──────────────────────
-LiveCapture.start()     →      _capture_worker()
-Scapy sniff() loop
-every N seconds:               ↓
-drain buffer ←─ Lock ──────  _packet_callback()
-run detectors                appends to buffer
-display alerts
-store to DB
+Main thread                         Background thread
+──────────────────────────          ──────────────────────────
+LiveCapture.start()         →       _capture_worker()
+                                    Scapy sniff() loop
+                                    (continuous, non-blocking)
+                                            ↓
+                                    _packet_callback()
+                                    acquire lock → append packet
+                                            ↓
+                                    ┌─────────────────┐
+every N seconds:                    │  Packet buffer  │
+acquire lock → drain buffer ←───── │  (shared memory)│
+release lock                        └─────────────────┘
+        ↓                                threading.Lock()
+run all 4 detectors                 protects both sides
+        ↓
+display alerts + store to DB
+        ↓
+  (loop back)
 
 Threading.Event used as stop flag — Ctrl+C shuts both
 threads down cleanly without data loss.
