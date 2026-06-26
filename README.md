@@ -79,8 +79,6 @@ python main.py simulate
 
 ## Architecture
 
-## Architecture
-
 ```
 Network Interface (live) / PCAP File (offline)
               ↓
