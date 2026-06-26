@@ -128,6 +128,11 @@ hits 3x the baseline — catches DDoS and flood attempts.
 
 ## Live capture architecture
 
+## Live capture architecture
+
+Two threads run simultaneously. A shared packet buffer sits between them, protected by `threading.Lock()` to prevent race conditions.
+
+```
 Main thread                         Background thread
 ──────────────────────────          ──────────────────────────
 LiveCapture.start()         →       _capture_worker()
@@ -139,18 +144,17 @@ LiveCapture.start()         →       _capture_worker()
                                             ↓
                                     ┌─────────────────┐
 every N seconds:                    │  Packet buffer  │
-acquire lock → drain buffer ←───── │  (shared memory)│
+acquire lock → drain buffer ←────── │  (shared memory)│
 release lock                        └─────────────────┘
-        ↓                                threading.Lock()
+        ↓                           threading.Lock()
 run all 4 detectors                 protects both sides
         ↓
 display alerts + store to DB
         ↓
   (loop back)
+```
 
-Threading.Event used as stop flag — Ctrl+C shuts both
-threads down cleanly without data loss.
-
+`threading.Event()` is used as a stop flag — Ctrl+C shuts both threads down cleanly without data loss.
 ---
 
 ## Tech stack
