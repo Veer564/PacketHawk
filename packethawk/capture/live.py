@@ -9,14 +9,47 @@ from packethawk.storage.db      import init_db, store_packets_bulk
 from packethawk.detection.engine import run_all_detectors, save_alerts
 
 def get_default_interface():
-    """Return default network interface based on operating system."""
+    """
+    Auto-detect the active network interface on any OS.
+    Tries to find the interface that actually has traffic
+    instead of returning a hardcoded name.
+    """
+    import platform
+    from scapy.all import conf, get_if_list
+
     system = platform.system()
-    if system == "Darwin":    # macOS
-        return "en0"
-    elif system == "Linux":
-        return "eth0"
-    elif system == "Windows":
-        return "Wi-Fi"
+
+    # First try Scapy's own best-guess interface
+    # This works on most systems automatically
+    try:
+        best = conf.iface
+        if best and str(best) not in ("", "None", "lo", "lo0"):
+            print(f"[LiveCapture] Auto-detected interface: {best}")
+            return str(best)
+    except Exception:
+        pass
+
+    # Fallback — OS-specific defaults
+    fallbacks = {
+        "Darwin":  ["en0", "en1", "en2"],
+        "Linux":   ["eth0", "wlan0", "ens33", "ens3", "enp0s3"],
+        "Windows": ["Wi-Fi", "Ethernet", "Local Area Connection"],
+    }
+
+    candidates = fallbacks.get(system, ["en0"])
+    available  = get_if_list()
+
+    for iface in candidates:
+        if iface in available:
+            print(f"[LiveCapture] Using interface: {iface}")
+            return iface
+
+    # Last resort — return first non-loopback interface
+    for iface in available:
+        if iface not in ("lo", "lo0", "localhost"):
+            print(f"[LiveCapture] Falling back to: {iface}")
+            return iface
+
     return "en0"
 
 # ── Packet conversion ─────────────────────────────────────────

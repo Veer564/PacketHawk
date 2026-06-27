@@ -168,20 +168,43 @@ def simulate(export_name):
               help="Network interface (auto-detected if not specified)")
 @click.option("--interval", default=10,
               help="Seconds between analysis runs (default: 10)")
-def live(interface, interval):
+@click.option("--list-interfaces", is_flag=True, default=False,
+              help="List all available network interfaces and exit")
+def live(interface, interval, list_interfaces):
     """Start live packet capture and real-time anomaly detection."""
+
+    # Show available interfaces if requested
+    if list_interfaces:
+        from scapy.all import get_if_list
+        click.echo("\nAvailable network interfaces:")
+        for iface in get_if_list():
+            click.echo(f"  {iface}")
+        click.echo()
+        return
+
     print_banner()
+
     if not interface:
         interface = get_default_interface()
-        click.echo(f"[PacketHawk] Auto-detected interface: {interface}")
+
     click.echo(f"[PacketHawk] Starting live capture on {interface}...")
     click.echo(f"[PacketHawk] Analysis runs every {interval} seconds.")
     click.echo(f"[PacketHawk] Press Ctrl+C to stop.\n")
-    capture = LiveCapture(
-        interface        = interface,
-        analyse_interval = interval,
-    )
-    capture.start()
+
+    try:
+        capture = LiveCapture(
+            interface        = interface,
+            analyse_interval = interval,
+        )
+        capture.start()
+    except Exception as e:
+        click.echo(f"\n[Error] Could not start capture on {interface}: {e}")
+        click.echo("\nAvailable interfaces on this system:")
+        from scapy.all import get_if_list
+        for iface in get_if_list():
+            click.echo(f"  {iface}")
+        click.echo(f"\nTry: python main.py live --interface <name>")
+        click.echo(f"Or:  python main.py live --list-interfaces")
 
 if __name__ == "__main__":
     cli()
