@@ -55,6 +55,7 @@ python main.py simulate
 | `python main.py stats` | Show database statistics |
 | `python main.py simulate --export report` | Export to JSON + CSV |
 | `python main.py analyse <file> --summary` | Show packet summary |
+| `python main.py live --list-interfaces` | Show all available network interfaces |
 
 ---
 
@@ -165,6 +166,34 @@ display alerts + store to DB
 | ASCII banner | pyfiglet |
 | Testing | pytest (19 tests) |
 | CI | GitHub Actions |
+
+---
+
+## Troubleshooting
+
+**Live capture not working on a new system?**
+
+First check available interfaces on your machine:
+```bash
+python main.py live --list-interfaces
+```
+
+Then use the correct interface:
+```bash
+python main.py live --interface eth0      # Linux
+python main.py live --interface "Wi-Fi"   # Windows
+python main.py live --interface en0       # macOS
+```
+
+**Linux:** Run with sudo if permission denied:
+```bash
+sudo python main.py live
+```
+
+**Windows:** Install Npcap from https://npcap.com before running live capture.
+
+**macOS:** Install Wireshark from https://www.wireshark.org — it grants
+packet capture permissions automatically.
 
 ---
 
